@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>🍊</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/vant/3.1.5/index.min.css" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/3.1.5/vue.global.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/iScroll/5.2.0/iscroll.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vant/3.1.5/vant.min.js"></script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --van-nav-bar-text-color: black;
+        --van-nav-bar-icon-color: black;
+        --van-nav-bar-arrow-size: 24px;
+        --van-cell-line-height: 22px;
+      }
+      body {
+        background-color: #f4f4fc;
+        zoom: 2.6;
+      }
+      .van-nav-bar__title {
+        font-weight: 900;
+      }
+      .van-nav-bar__left,
+      .van-nav-bar__right {
+        font-size: 16px;
+      }
+      .popField {
+        width: 32vw;
+      }
+      select {
+        width: 100%;
+        height: 40px;
+        text-align: center;
+        text-align-last: center;
+      }
+      #mainPages {
+        height: 45vh;
+        overflow: hidden;
+        touch-action: none;
+      }
+      .scroll-area {
+        height: 60vh;
+      }
+      .van-step--finish .van-step__circle,
+      .van-step--finish .van-step__line {
+        background-color: var(--van-step-circle-color);
+      }
+      .pcs {
+        height: 40px;
+        width: 100%;
+        font-size: 15px;
+        position: relative;
+        right: 23px;
+        top: 6px;
+        color: #334456;
+      }
+      .pcsText {
+        margin-left: 10px;
+        display: flex;
+      }
+      .pcsTextL {
+        text-align: left;
+        flex: auto;
+        display: inline;
+      }
+      .pcsTextR {
+        text-align: right;
+        display: inline;
+      }
+      .pcsColor1 {
+        color: #949494;
+      }
+      .pcsColor2 {
+        color: #686c6f;
+      }
+      .danbtn{
+        position: absolute;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        width:40%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="Page">
+      <van-nav-bar
+        title="请假申请"
+        left-text="返回"
+        right-text="首页"
+        left-arrow
+        @click-right="showType1 = true"
+      ></van-nav-bar>
+      <van-popup v-model:show="showType2" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="datetime"
+          title="开始时间"
+          @confirm="setStartDate"
+          cancel-button-text="选择"
+          swipe-duration="130"
+        ></van-datetime-picker
+      ></van-popup>
+      <van-popup v-model:show="showType3" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="datetime"
+          title="结束时间"
+          @confirm="setEndDate"
+          cancel-button-text="选择"
+          swipe-duration="130"
+        ></van-datetime-picker
+      ></van-popup>
+      <van-popup v-model:show="showType4" position="bottom">
+        <van-picker
+          title="选择性别"
+          :columns="['男','女']"
+          @change="setSex"
+          confirm-button-text=" "
+          cancel-button-text=" "
+          swipe-duration="130"
+        ></van-picker>
+      </van-popup>
+      <van-popup v-model:show="showType5" position="bottom">
+        <van-picker
+          title="选择类型"
+          :columns="['事假','病假','补事假','补病假']"
+          @change="setType"
+          confirm-button-text=" "
+          cancel-button-text=" "
+          swipe-duration="130"
+        ></van-picker>
+      </van-popup>
+      <van-popup v-model:show="showType6" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="datetime"
+          title="开始审批时间"
+          @confirm="setPADate"
+          cancel-button-text="选择"
+          swipe-duration="130"
+        ></van-datetime-picker
+      ></van-popup>
+      <van-popup v-model:show="showType7" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="datetime"
+          title="导员审批时间"
+          @confirm="setPBDate"
+          cancel-button-text="选择"
+          swipe-duration="130"
+        ></van-datetime-picker
+      ></van-popup>
+      <van-popup v-model:show="showType8" position="bottom">
+        <van-datetime-picker
+          v-model="currentDate"
+          type="datetime"
+          title="院系审批时间"
+          @confirm="setPCDate"
+          cancel-button-text="选择"
+          swipe-duration="130"
+        ></van-datetime-picker
+      ></van-popup>
+      <van-popup class="popField" v-model:show="showType1">
+        <van-collapse v-model="activeName" accordion>
+          <van-collapse-item title="设置" name="1">
+            <van-field v-model="name_" label="姓名" placeholder="请输入姓名"> </van-field>
+            <van-cell title="性别" :value="sex_" @click="showType4 = true"></van-cell>
+            <van-field v-model="number_" label="学号" placeholder="请输入学号" type="digit">
+            </van-field>
+            <van-field v-model="collage_" label="院系" placeholder="请输入院系"> </van-field>
+            <van-field v-model="major_" label="专业" placeholder="请输入专业"> </van-field>
+            <van-field v-model="class_" label="班级" placeholder="请输入班级"> </van-field>
+            <van-cell title="请假类型" :value="type_" @click="showType5 = true"></van-cell>
+            <van-cell title="开始时间" :value="startTime_" @click="showType2 = true"></van-cell>
+            <van-cell title="结束时间" :value="endTime_" @click="showType3 = true"></van-cell>
+            <van-field v-model="cause_" label="请假原因" placeholder="请输入原因"> </van-field>
+            <van-field v-model="where_" label="去向" placeholder="请输入去向"> </van-field>
+          </van-collapse-item>
+          <van-collapse-item title="审批流程" name="2">
+            <van-cell
+              title="选择发起时间"
+              :value="pADate1+' '+pATime1"
+              @click="showType6 = true"
+              label="本页秒数自动生成"
+            ></van-cell>
+            <van-field v-model="name_2" label="导员姓名" placeholder="请输入姓名"> </van-field>
+            <van-cell
+              title="导员审核时间"
+              :value="pADate2+' '+pATime2"
+              @click="showType7 = true"
+            ></van-cell>
+            <van-field v-model="pcsText1" label="导员意见" placeholder="请输入意见"> </van-field>
+            <template v-if="pcsNum !== 2">
+              <van-field v-model="name_3" label="院系姓名" placeholder="请输入姓名"> </van-field>
+              <van-cell
+                title="院系审核时间"
+                :value="pADate3+' '+pATime3"
+                @click="showType8 = true"
+              ></van-cell>
+              <van-field v-model="pcsText2" label="院系意见" placeholder="请输入意见"> </van-field>
+            </template>
+            <van-cell
+              title="随机生成时间"
+              is-link
+              value="起始为8-24h前"
+              label="每条时间差在4h内"
+              @click="randomTime"
+            ></van-cell>
+          </van-collapse-item>
+        </van-collapse>
+      </van-popup>
+      <div id="mainPages">
+        <div class="scroll-area">
+          <div style="height: 19px"></div>
+          <van-cell-group inset>
+            <van-cell title="姓名">{{name_}}</van-cell>
+            <van-cell title="性别">{{sex_}}</van-cell>
+            <van-cell title="学号">{{number_}}</van-cell>
+            <van-cell title="院系">{{collage_}}</van-cell>
+            <van-cell title="专业">{{major_}}</van-cell>
+            <van-cell title="班级">{{class_}}</van-cell>
+          </van-cell-group>
+          <div style="height: 13px"></div>
+          <van-cell-group inset>
+            <van-field label="请假类型" :model-value="type_" disabled required></van-field>
+            <van-field label="开始时间" :model-value="startTime_" disabled required></van-field>
+            <van-field label="结束时间" :model-value="endTime_" disabled required></van-field>
+            <van-field
+              label="请假天数"
+              :model-value="days_<=2?'不超过2天':(days_>7?'超过7天':'3-7天')"
+              disabled
+            ></van-field>
+            <van-field
+              label="请假原因"
+              :model-value="cause_"
+              disabled
+              required
+              type="textarea"
+              maxlength="200"
+              show-word-limit
+            ></van-field>
+            <van-field
+              label="去向"
+              :model-value="where_"
+              disabled
+              required
+              maxlength="100"
+              show-word-limit
+            ></van-field>
+            <van-field label="文件上传" :model-value="fileUpload_" disabled></van-field>
+          </van-cell-group>
+          <div style="height: 21px"></div>
+          <van-cell-group inset>
+            <van-steps direction="vertical" :active="pcsNum = days_<=2?2:3">
+              <div class="pcs">审批流程</div>
+              <van-step>
+                <div class="pcsText">
+                  <div class="pcsTextL">
+                    <p
+                      >发起人<br />
+                      <span class="pcsColor1">{{name_}}</span>
+                    </p>
+                  </div>
+                  <div class="pcsTextR pcsColor1">
+                    <p>{{pADate1}}<br />{{pATime1}}</p>
+                  </div>
+                </div>
+              </van-step>
+              <van-step>
+                <div class="pcsText">
+                  <div class="pcsTextL">
+                    <p
+                      >辅导员审核<br />
+                      <span class="pcsColor1">{{name_2}}（同意）</span><br />
+                      <span class="pcsColor2">审批意见:{{pcsText1}}</span>
+                    </p>
+                  </div>
+                  <div class="pcsTextR pcsColor1">
+                    <p>{{pADate2}}<br />{{pATime2}}</p>
+                  </div>
+                </div>
+              </van-step>
+              <van-step v-if="pcsNum !== 2">
+                <div class="pcsText">
+                  <div class="pcsTextL">
+                    <p
+                      >院系审核<br />
+                      <span class="pcsColor1">{{name_3}}（同意）</span><br />
+                      <span class="pcsColor2">审批意见:{{pcsText2}}</span>
+                    </p>
+                  </div>
+                  <div class="pcsTextR pcsColor1">
+                    <p>{{pADate3}}<br />{{pATime3}}</p>
+                  </div>
+                </div>
+              </van-step>
+              <van-step>
+                <p>当前节点：审批通过</p>
+              </van-step>
+            </van-steps>
+          </van-cell-group>
+          <div style="height: 60px; width: 100%"></div>
+          <van-button class="danbtn" round type="danger">销 假</van-button>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    Date.prototype.format = function (format) {
+      var o = {
+        "M+": this.getMonth() + 1,
+        "d+": this.getDate(),
+        "h+": this.getHours(),
+        "m+": this.getMinutes(),
+        "s+": this.getSeconds(),
+      }
+      if (/(y+)/.test(format))
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length))
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(format))
+          format = format.replace(
+            RegExp.$1,
+            RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length)
+          )
+      return format
+    }
+    function getRndInteger(min, max) {
+      return Math.floor(Math.random() * (max - min)) + min
+    }
+    const app = Vue.createApp({
+      data() {
+        return {
+          scroll: null,
+
+          showType1: false,
+          showType2: false,
+          showType3: false,
+          showType4: false,
+          showType5: false,
+          showType6: false,
+          showType7: false,
+          showType8: false,
+          activeName: "1",
+
+          currentDate: new Date(),
+
+          name_: "",
+          sex_: "男",
+          sexlist_: [
+            { text: "男", value: "男" },
+            { text: "女", value: "女" },
+          ],
+          number_: "",
+          collage_: "",
+          major_: "",
+          class_: "",
+
+          type_: "事假",
+          startTime_: new Date().format("yyyy-MM-dd hh:mm"),
+          endTime_: new Date(new Date().getTime() + 172800000).format("yyyy-MM-dd hh:mm"),
+          days_: "3",
+          cause_: "",
+          where_: "",
+          fileUpload_: "",
+
+          pcsNum: 3,
+          pADate1: new Date().format("yyyy-MM-dd"),
+          pATime1: new Date().format("hh:mm:ss"),
+          name_2: "",
+          pADate2: new Date().format("yyyy-MM-dd"),
+          pATime2: new Date().format("hh:mm:ss"),
+          pcsText1: "同意",
+          name_3: "",
+          pADate3: new Date().format("yyyy-MM-dd"),
+          pATime3: new Date().format("hh:mm:ss"),
+          pcsText2: "同意",
+        }
+      },
+      mounted() {
+        this.scroll = new IScroll("#mainPages", {
+          disablePointer: true,
+          disableMouse: true,
+          disableTouch: false,
+        })
+      },
+      methods: {
+        setSex: function (value) {
+          this.sex_ = value
+        },
+        setType: function (value) {
+          this.type_ = value
+        },
+        setStartDate: function (value) {
+          this.startTime_ = value.format("yyyy-MM-dd hh:mm")
+          this.days_ =
+            Math.ceil(
+              (new Date(this.endTime_.substr(0, 10)) - new Date(this.startTime_.substr(0, 10))) /
+                86400000
+            ) + 1
+          this.showType2 = false
+        },
+        setEndDate: function (value) {
+          this.endTime_ = value.format("yyyy-MM-dd hh:mm")
+          this.days_ =
+            Math.ceil(
+              (new Date(this.endTime_.substr(0, 10)) - new Date(this.startTime_.substr(0, 10))) /
+                86400000
+            ) + 1
+          this.showType3 = false
+        },
+        setPADate: function (value) {
+          this.pADate1 = value.format("yyyy-MM-dd")
+          this.pATime1 = value.format("hh:mm:") + getRndInteger(10, 60)
+          this.showType6 = false
+        },
+        setPBDate: function (value) {
+          this.pADate2 = value.format("yyyy-MM-dd")
+          this.pATime2 = value.format("hh:mm:") + getRndInteger(10, 60)
+          this.showType7 = false
+        },
+        setPCDate: function (value) {
+          this.pADate3 = value.format("yyyy-MM-dd")
+          this.pATime3 = value.format("hh:mm:") + getRndInteger(10, 60)
+          this.showType8 = false
+        },
+        randomTime: function () {
+          var temp = new Date(this.currentDate.getTime() - getRndInteger(28800000, 86400000))
+          this.pADate1 = temp.format("yyyy-MM-dd")
+          this.pATime1 = temp.format("hh:mm:ss")
+          var temp1 = new Date(temp.getTime() + getRndInteger(10000, 14400000))
+          this.pADate2 = temp1.format("yyyy-MM-dd")
+          this.pATime2 = temp1.format("hh:mm:ss")
+          var temp2 = new Date(temp1.getTime() + getRndInteger(10000, 14400000))
+          this.pADate3 = temp2.format("yyyy-MM-dd")
+          this.pATime3 = temp2.format("hh:mm:ss")
+        },
+      },
+    })
+    app.use(vant)
+    app.mount("#Page")
+  </script>
+</html>
